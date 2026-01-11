@@ -5,11 +5,11 @@ class ListingsController < ApplicationController
   before_action :verify_ownership, only: [ :update, :destroy ]
 
   def index
-    render json: { listings: RvListing.all }, status: :ok
+    render json: { listings: ActiveModel::Serializer::CollectionSerializer.new(RvListing.all, serializer: RvListingSerializer).as_json }, status: :ok
   end
 
   def show
-    render json: { listing: @rv_listing }, status: :ok
+    render json: { listing: RvListingSerializer.new(@rv_listing).as_json }, status: :ok
   end
 
   def create
@@ -17,7 +17,7 @@ class ListingsController < ApplicationController
     rv_listing.user_id = current_user.id
 
     if rv_listing.save
-      render json: { listing: rv_listing }, status: :created
+      render json: { listing: RvListingSerializer.new(rv_listing).as_json }, status: :created
     else
       render json: { errors: rv_listing.errors.full_messages }, status: :unprocessable_entity
     end
@@ -25,7 +25,7 @@ class ListingsController < ApplicationController
 
   def update
     if @rv_listing.update(rv_listing_params)
-      render json: @rv_listing, status: :ok
+      render json: RvListingSerializer.new(@rv_listing).as_json, status: :ok
     else
       render json: { errors: @rv_listing.errors.full_messages }, status: :unprocessable_entity
     end
