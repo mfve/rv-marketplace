@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  include DeviseApi::Controllers::Helpers
+  include Devise::Api::Controllers::Helpers
 
   before_action :authenticate_user!
 

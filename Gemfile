@@ -46,4 +46,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 end
 
-gem "devise-api", "~> 0.2.0"
+gem 'devise'
+gem 'devise-api'
+gem 'active_model_serializers'

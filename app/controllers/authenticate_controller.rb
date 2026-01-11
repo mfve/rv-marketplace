@@ -4,8 +4,15 @@ class AuthenticateController < ApplicationController
     user = User.new(user_params)
 
     if user.save
-      token = DeviseApi::Token.create_for(user)
-      render json: { message: 'User created' }, status: :created
+      token_service = Devise::Api::TokensService::Create.new(resource_owner: user)
+      result = token_service.call
+      
+      if result.success?
+        token = result.value!
+        render json: { token: token.access_token, expires_in: token.expires_in }, status: :created
+      else
+        render json: { errors: ['Token creation failed'] }, status: :internal_server_error
+      end
     else
       render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
@@ -14,10 +21,17 @@ class AuthenticateController < ApplicationController
   def token
     user = User.find_by(email: params[:email])
     if user && user.valid_password?(params[:password])
-      token = DeviseApi::Token.create_for(user)
-      render json: { token: token.access_token, expires_in: token.expires_in }, status: :ok
+      token_service = Devise::Api::TokensService::Create.new(resource_owner: user)
+      result = token_service.call
+      
+      if result.success?
+        token = result.value!
+        render json: { token: token.access_token, expires_in: token.expires_in }, status: :ok
+      else
+        render json: { errors: ['Token creation failed'] }, status: :internal_server_error
+      end
     else
-      render json: { error: 'Invalid email or password' }, status: :unauthorized
+      render json: { errors: ['Invalid email or password'] }, status: :unauthorized
     end
   end
 
