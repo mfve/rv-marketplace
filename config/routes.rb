@@ -7,17 +7,27 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Frontend routes
+  root "web/listings#index"
+  get "/listings", to: "web/listings#index"
+  get "/listings/new", to: "web/listings#new"
+  get "/listings/:id/edit", to: "web/listings#edit"
+  get "/listings/:id", to: "web/listings#show"
+  get "/bookings", to: "web/bookings#index"
+  get "/login", to: "web/sessions#new"
+  get "/signup", to: "web/sessions#signup"
 
-  post "/authenticate/sign_up", to: "authenticate#sign_up"
-  post "/authenticate/token", to: "authenticate#token"
+  # API routes (namespaced to avoid conflicts with frontend routes)
+  namespace :api do
+    post "/authenticate/sign_up", to: "authenticate#sign_up"
+    post "/authenticate/token", to: "authenticate#token"
 
-  resources :listings, only: [ :index, :show, :create, :update, :destroy ]
-  resources :bookings, only: [ :index, :create ] do
-    member do
-      post :confirm
-      post :reject
+    resources :listings, only: [ :index, :show, :create, :update, :destroy ]
+    resources :bookings, only: [ :index, :create ] do
+      member do
+        post :confirm
+        post :reject
+      end
     end
   end
 end

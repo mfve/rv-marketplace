@@ -1,0 +1,71 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Create your account
+      </h2>
+    </div>
+    <form id="signup-form" class="mt-8 space-y-6">
+      <div class="rounded-md shadow-sm space-y-4">
+        <div>
+          <label for="name" class="sr-only">Name</label>
+          <input id="name" name="name" type="text" required class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Name">
+        </div>
+        <div>
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" name="email" type="email" required class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address">
+        </div>
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <input id="password" name="password" type="password" required class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
+        </div>
+        <div>
+          <label for="password-confirmation" class="sr-only">Password Confirmation</label>
+          <input id="password-confirmation" name="password_confirmation" type="password" required class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Confirm Password">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Sign up
+        </button>
+      </div>
+
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          Already have an account?
+          <a href="/login" class="font-medium text-indigo-600 hover:text-indigo-500">Sign in</a>
+        </p>
+      </div>
+
+      <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const passwordConfirmation = document.getElementById('password-confirmation').value;
+  const errorDiv = document.getElementById('error-message');
+
+  errorDiv.classList.add('hidden');
+
+  if (password !== passwordConfirmation) {
+    errorDiv.textContent = 'Passwords do not match';
+    errorDiv.classList.remove('hidden');
+    return;
+  }
+
+  const success = await signup(name, email, password, passwordConfirmation);
+  if (success) {
+    window.location.href = '/listings';
+  } else {
+    errorDiv.textContent = 'Failed to create account. Please try again.';
+    errorDiv.classList.remove('hidden');
+  }
+});
+</script>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RV Marketplace</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {}
+        }
+      }
+
+      // API Client for RV Marketplace - Load early so it's available for all scripts
+      window.API = {
+        baseURL: window.location.origin,
+        token: localStorage.getItem('auth_token'),
+
+        async request(endpoint, options = {}) {
+          const url = `${this.baseURL}${endpoint}`;
+          const headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            ...options.headers
+          };
+
+          if (this.token) {
+            headers['Authorization'] = `Bearer ${this.token}`;
+          }
+
+          const response = await fetch(url, {
+            ...options,
+            headers
+          });
+
+          if (response.status === 401) {
+            this.logout();
+            window.location.href = '/login';
+            return;
+          }
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ errors: ['Request failed'] }));
+            // Create an error object that preserves the errors array
+            const errorMessage = errorData.errors && Array.isArray(errorData.errors) 
+              ? errorData.errors.join(', ') 
+              : (errorData.error || 'Request failed');
+            const error = new Error(errorMessage);
+            error.errors = errorData.errors || (errorData.error ? [errorData.error] : [errorMessage]);
+            error.response = errorData;
+            error.status = response.status;
+            throw error;
+          }
+
+          return response.json();
+        },
+
+        async get(endpoint) {
+          return this.request(endpoint, { method: 'GET' });
+        },
+
+        async post(endpoint, data) {
+          return this.request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data)
+          });
+        },
+
+        async put(endpoint, data) {
+          return this.request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+          });
+        },
+
+        async delete(endpoint) {
+          return this.request(endpoint, { method: 'DELETE' });
+        },
+
+        setToken(token) {
+          this.token = token;
+          localStorage.setItem('auth_token', token);
+        },
+
+        logout() {
+          this.token = null;
+          localStorage.removeItem('auth_token');
+        }
+      };
+      
+      // Also make it available as API for convenience
+      var API = window.API;
+      
+      // Debug: Verify API is defined
+      console.log('API defined:', typeof window.API !== 'undefined');
+
+      // Authentication functions
+      async function login(email, password) {
+        try {
+          const response = await window.API.post('/api/authenticate/token', { email, password });
+          if (response.token) {
+            window.API.setToken(response.token);
+            updateAuthUI();
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Login error:', error);
+          return false;
+        }
+      }
+
+      async function signup(name, email, password, passwordConfirmation) {
+        try {
+          const response = await window.API.post('/api/authenticate/sign_up', {
+            name,
+            email,
+            password,
+            password_confirmation: passwordConfirmation
+          });
+          if (response.token) {
+            window.API.setToken(response.token);
+            updateAuthUI();
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Signup error:', error);
+          return false;
+        }
+      }
+
+      function logout() {
+        if (window.API) {
+          window.API.logout();
+        }
+        updateAuthUI();
+        window.location.href = '/';
+      }
+
+      function updateAuthUI() {
+        const token = window.API ? window.API.token : null;
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginLink = document.getElementById('login-link');
+        const userEmail = document.getElementById('user-email');
+
+        if (token) {
+          if (logoutBtn) logoutBtn.classList.remove('hidden');
+          if (loginLink) loginLink.classList.add('hidden');
+          if (userEmail) userEmail.textContent = 'User';
+        } else {
+          if (logoutBtn) logoutBtn.classList.add('hidden');
+          if (loginLink) loginLink.classList.remove('hidden');
+          if (userEmail) userEmail.textContent = '';
+        }
+      }
+    </script>
+  </head>
+
+  <body class="bg-gray-50">
+    <nav class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex">
+            <div class="flex-shrink-0 flex items-center">
+              <a href="/" class="text-xl font-bold text-indigo-600">RV Marketplace</a>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <a href="/listings" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Listings
+              </a>
+              <a href="/bookings" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Bookings
+              </a>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div id="auth-section" class="flex items-center space-x-4">
+              <span id="user-email" class="text-sm text-gray-700"></span>
+              <button id="logout-btn" onclick="logout()" class="hidden bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700">
+                Logout
+              </button>
+              <a href="/login" id="login-link" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <%= yield %>
+    </main>
+
+    <script>
+      // Initialize auth UI on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        updateAuthUI();
+      });
+    </script>
+  </body>
+</html>

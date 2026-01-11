@@ -47,3 +47,14 @@ bundle exec rspec
 ```
 docker-compose up --build
 ```
+or 
+```
+test-docker.sh
+```
+## Front end
+Available at `http://localhost:3000` after startup
+
+## Notes
+
+- No functionality included around the messages table. It needed some form of specs either - it either needs a Thread ID, Booking ID or Other User ID column. Otherwise you can just have a mess of messages between multiple people about a RV Listing.
+
