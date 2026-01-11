@@ -49,6 +49,11 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "shoulda-matchers"
+
+  # Swagger/OpenAPI documentation
+  gem "rswag"
+  gem "rswag-api"
+  gem "rswag-ui"
 end
 
 group :test do

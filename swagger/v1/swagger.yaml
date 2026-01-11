@@ -1,0 +1,640 @@
+---
+openapi: 3.0.1
+info:
+  title: RV Marketplace API
+  version: v1
+  description: API documentation for the RV Marketplace application. This API allows
+    users to create listings, make bookings, and manage their RV rental marketplace.
+paths:
+  "/authenticate/sign_up":
+    post:
+      summary: Sign up a new user
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  expires_in:
+                    type: integer
+                    example: 3600
+        '422':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Email has already been taken
+                    - Password is too short
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: password123
+                password_confirmation:
+                  type: string
+                  example: password123
+              required:
+              - email
+              - password
+              - password_confirmation
+  "/authenticate/token":
+    post:
+      summary: Get authentication token
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '200':
+          description: Token generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  expires_in:
+                    type: integer
+                    example: 3600
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Invalid email or password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: password123
+              required:
+              - email
+              - password
+  "/bookings":
+    get:
+      summary: Get all bookings for the current user
+      tags:
+      - Bookings
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Bookings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        start_date:
+                          type: string
+                          format: date
+                          example: '2024-01-15'
+                        end_date:
+                          type: string
+                          format: date
+                          example: '2024-01-20'
+                        status:
+                          type: string
+                          example: pending
+                          enum:
+                          - pending
+                          - confirmed
+                          - rejected
+                  listing_bookings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        start_date:
+                          type: string
+                          format: date
+                          example: '2024-01-15'
+                        end_date:
+                          type: string
+                          format: date
+                          example: '2024-01-20'
+                        status:
+                          type: string
+                          example: pending
+                          enum:
+                          - pending
+                          - confirmed
+                          - rejected
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Unauthorized
+    post:
+      summary: Create a new booking
+      tags:
+      - Bookings
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  booking:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      start_date:
+                        type: string
+                        format: date
+                        example: '2024-01-15'
+                      end_date:
+                        type: string
+                        format: date
+                        example: '2024-01-20'
+                      status:
+                        type: string
+                        example: pending
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Unauthorized
+        '404':
+          description: Listing not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Listing not found
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - You cannot book your own listing
+                    - Invalid date format. Use YYYY-MM-DD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rv_listing_id:
+                  type: integer
+                  example: 1
+                start_date:
+                  type: string
+                  format: date
+                  example: '2024-01-15'
+                end_date:
+                  type: string
+                  format: date
+                  example: '2024-01-20'
+              required:
+              - rv_listing_id
+              - start_date
+              - end_date
+  "/bookings/{id}/confirm":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: Booking ID
+      schema:
+        type: integer
+    post:
+      summary: Confirm a booking
+      tags:
+      - Bookings
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Booking confirmed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Booking confirmed
+        '404':
+          description: Booking not found or forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Booking not found or forbidden
+  "/bookings/{id}/reject":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: Booking ID
+      schema:
+        type: integer
+    post:
+      summary: Reject a booking
+      tags:
+      - Bookings
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Booking rejected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Booking rejected
+        '404':
+          description: Booking not found or forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Booking not found or forbidden
+  "/listings":
+    get:
+      summary: List all listings
+      tags:
+      - Listings
+      responses:
+        '200':
+          description: Listings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: Beautiful RV in the Mountains
+                        description:
+                          type: string
+                          example: A cozy RV perfect for weekend getaways
+                        location:
+                          type: string
+                          example: Melbourne, VIC
+                        price_per_day:
+                          type: number
+                          example: 150.0
+    post:
+      summary: Create a new listing
+      tags:
+      - Listings
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Listing created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listing:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      title:
+                        type: string
+                        example: Beautiful RV in the Mountains
+                      description:
+                        type: string
+                        example: A cozy RV perfect for weekend getaways
+                      location:
+                        type: string
+                        example: Melbourne, VIC
+                      price_per_day:
+                        type: number
+                        example: 150.0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Unauthorized
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Title can't be blank
+                    - Price per day must be greater than 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Beautiful RV in the Mountains
+                description:
+                  type: string
+                  example: A cozy RV perfect for weekend getaways
+                location:
+                  type: string
+                  example: Melbourne, VIC
+                price_per_day:
+                  type: number
+                  example: 150.0
+              required:
+              - title
+              - description
+              - location
+              - price_per_day
+  "/listings/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: Listing ID
+      schema:
+        type: integer
+    get:
+      summary: Get a specific listing
+      tags:
+      - Listings
+      responses:
+        '200':
+          description: Listing retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listing:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      title:
+                        type: string
+                        example: Beautiful RV in the Mountains
+                      description:
+                        type: string
+                        example: A cozy RV perfect for weekend getaways
+                      location:
+                        type: string
+                        example: Melbourne, VIC
+                      price_per_day:
+                        type: number
+                        example: 150.0
+        '404':
+          description: Listing not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Listing not found
+    put:
+      summary: Update a listing
+      tags:
+      - Listings
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Listing updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: Updated RV Title
+                  description:
+                    type: string
+                    example: Updated description
+                  location:
+                    type: string
+                    example: Updated Location
+                  price_per_day:
+                    type: number
+                    example: 175.0
+        '403':
+          description: Forbidden - not the owner
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Forbidden to update other users listings
+        '404':
+          description: Listing not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Listing not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated RV Title
+                description:
+                  type: string
+                  example: Updated description
+                location:
+                  type: string
+                  example: Updated Location
+                price_per_day:
+                  type: number
+                  example: 175.0
+    delete:
+      summary: Delete a listing
+      tags:
+      - Listings
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Listing deleted successfully
+        '403':
+          description: Forbidden - not the owner
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Forbidden to update other users listings
+        '404':
+          description: Listing not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                    - Listing not found
+servers:
+- url: http://localhost:3000
+  description: Development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

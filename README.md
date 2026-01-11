@@ -33,3 +33,17 @@ rails s
 
 ## API Documentation
 - cURL Commands available at `curl_commands.md`
+- Once server started, swagger documentation available at 
+```
+   http://localhost:3000/api-docs
+```
+
+## Test Suite
+```
+bundle exec rspec
+```
+
+## Running in a docker container
+```
+docker-compose up --build
+```
