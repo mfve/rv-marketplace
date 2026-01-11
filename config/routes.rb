@@ -12,5 +12,10 @@ Rails.application.routes.draw do
   post '/authenticate/token', to: 'authenticate#token'
   
   resources :listings, only: [:index, :show, :create, :update, :destroy]
-  resources :bookings, only: [:index, :create, :confirm, :reject]
+  resources :bookings, only: [:index, :create] do
+    member do
+      post :confirm
+      post :reject
+    end
+  end
 end
