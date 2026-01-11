@@ -17,7 +17,7 @@ class CreateBookingService
       rv_listing: @rv_listing,
       start_date: @start_date,
       end_date: @end_date,
-      status: 'pending'
+      status: "pending"
     )
 
     if booking.save

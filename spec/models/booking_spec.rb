@@ -6,20 +6,20 @@ RSpec.describe Booking, type: :model do
     it { should belong_to(:rv_listing) }
   end
 
-  describe 'validations' do
+  describe "validations" do
     subject { build(:booking) }
-    
+
     it { should validate_presence_of(:start_date) }
     it { should validate_presence_of(:end_date) }
     it { should validate_presence_of(:status) }
-    
-    it 'validates status inclusion' do
+
+    it "validates status inclusion" do
       booking = build(:booking, status: 'invalid_status')
       expect(booking).not_to be_valid
-      expect(booking.errors[:status]).to include('invalid_status is not a valid status')
+      expect(booking.errors[:status]).to include("invalid_status is not a valid status")
     end
-    
-    it 'allows valid status values' do
+
+    it "allows valid status values" do
       %w[pending confirmed rejected].each do |status|
         booking = build(:booking, status: status)
         expect(booking).to be_valid

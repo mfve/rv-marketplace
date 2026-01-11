@@ -68,11 +68,11 @@ RSpec.describe 'Listings', type: :request do
         post '/listings', params: valid_params, headers: headers
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
-        
+
         # Handle both serialized and non-serialized formats
         listing_data = json['listing'] || json
         listing_id = listing_data['id']
-        
+
         expect(listing_id).to be_present
         listing = RvListing.find(listing_id)
         expect(listing.user_id).to eq(user.id)

@@ -29,11 +29,11 @@ listings_data = [
   # User1's listings
   { user: users[0], title: "User1's Luxury RV", description: "A spacious and well-equipped RV perfect for family adventures. Features modern amenities and comfortable sleeping arrangements.", location: "Sydney, NSW", price_per_day: 150.00 },
   { user: users[0], title: "User1's Cozy Cottage", description: "Charming cottage by the beach with stunning ocean views. Perfect for a relaxing getaway.", location: "Byron Bay, NSW", price_per_day: 200.00 },
-  
+
   # User2's listings
   { user: users[1], title: "User2's Adventure RV", description: "Compact and efficient RV ideal for solo travelers or couples. Fully self-contained with all essentials.", location: "Melbourne, VIC", price_per_day: 120.00 },
   { user: users[1], title: "User2's Mountain Retreat", description: "Beautiful mountain cabin surrounded by nature. Great for hiking enthusiasts and nature lovers.", location: "Blue Mountains, NSW", price_per_day: 180.00 },
-  
+
   # User3's listings
   { user: users[2], title: "User3's Family RV", description: "Large RV with multiple bedrooms, perfect for big families. Includes full kitchen and entertainment system.", location: "Brisbane, QLD", price_per_day: 175.00 },
   { user: users[2], title: "User3's Beach House", description: "Modern beachfront property with direct beach access. Features a pool and outdoor entertaining area.", location: "Gold Coast, QLD", price_per_day: 250.00 }
@@ -44,7 +44,7 @@ listings_data.each do |listing_data|
     user: listing_data[:user],
     title: listing_data[:title]
   )
-  
+
   if listing.new_record?
     listing.description = listing_data[:description]
     listing.location = listing_data[:location]
