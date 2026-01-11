@@ -13,8 +13,8 @@ class CreateBookingService
     return false unless valid?
 
     @booking = Booking.new(
-      user: user,
-      rv_listing: rv_listing,
+      user: @user,
+      rv_listing: @rv_listing,
       start_date: @start_date,
       end_date: @end_date,
       status: 'pending'
@@ -37,7 +37,7 @@ class CreateBookingService
   end
 
   def validate_not_own_listing
-    if rv_listing.user_id == user.id
+    if @rv_listing.user_id == @user.id
       errors << "You cannot book your own listing"
       return false
     end

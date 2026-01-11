@@ -1,3 +1,3 @@
-class RVListingSerializer < ActiveModel::Serializer
+class RvListingSerializer < ActiveModel::Serializer
   attributes :id, :title, :description, :location, :price_per_day
 end
