@@ -19,7 +19,7 @@ class BookingsController < ApplicationController
     )
 
     if service.call
-      render json: service.booking, status: :created
+      render json: { booking: service.booking }, status: :created
     else
       render json: { errors: service.errors }, status: :unprocessable_entity
     end
