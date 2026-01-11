@@ -4,11 +4,11 @@ RSpec.describe 'Bookings', type: :request do
   let(:user1) { create(:user) }
   let(:user2) { create(:user) }
   let(:rv_listing) { create(:rv_listing, user: user2) }
-  
+
   let(:token_service1) { Devise::Api::TokensService::Create.new(resource_owner: user1) }
   let(:token1) { token_service1.call.value! }
   let(:headers1) { { 'Authorization' => "Bearer #{token1.access_token}" } }
-  
+
   let(:token_service2) { Devise::Api::TokensService::Create.new(resource_owner: user2) }
   let(:token2) { token_service2.call.value! }
   let(:headers2) { { 'Authorization' => "Bearer #{token2.access_token}" } }

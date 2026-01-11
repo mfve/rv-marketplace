@@ -8,11 +8,11 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  post '/authenticate/sign_up', to: 'authenticate#sign_up'
-  post '/authenticate/token', to: 'authenticate#token'
-  
-  resources :listings, only: [:index, :show, :create, :update, :destroy]
-  resources :bookings, only: [:index, :create] do
+  post "/authenticate/sign_up", to: "authenticate#sign_up"
+  post "/authenticate/token", to: "authenticate#token"
+
+  resources :listings, only: [ :index, :show, :create, :update, :destroy ]
+  resources :bookings, only: [ :index, :create ] do
     member do
       post :confirm
       post :reject

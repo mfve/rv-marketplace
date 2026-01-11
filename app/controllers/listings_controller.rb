@@ -1,8 +1,8 @@
 class ListingsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  skip_before_action :authenticate_user!, only: [ :index, :show ]
 
-  before_action :set_rv_listing, only: [:show, :update, :destroy]
-  before_action :verify_ownership, only: [:update, :destroy]
+  before_action :set_rv_listing, only: [ :show, :update, :destroy ]
+  before_action :verify_ownership, only: [ :update, :destroy ]
 
   def index
     render json: { listings: RvListing.all }, status: :ok
@@ -48,12 +48,12 @@ class ListingsController < ApplicationController
   def set_rv_listing
     @rv_listing = RvListing.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { errors: ['Listing not found'] }, status: :not_found and return
+    render json: { errors: [ "Listing not found" ] }, status: :not_found and return
   end
 
   def verify_ownership
     unless @rv_listing.user_id == current_user.id
-      render json: { errors: ['Forbidden to update other users listings'] }, status: :forbidden and return
+      render json: { errors: [ "Forbidden to update other users listings" ] }, status: :forbidden and return
     end
   end
 end
