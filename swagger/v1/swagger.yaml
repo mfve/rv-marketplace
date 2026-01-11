@@ -6,7 +6,7 @@ info:
   description: API documentation for the RV Marketplace application. This API allows
     users to create listings, make bookings, and manage their RV rental marketplace.
 paths:
-  "/authenticate/sign_up":
+  "/api/authenticate/sign_up":
     post:
       summary: Sign up a new user
       tags:
@@ -62,7 +62,7 @@ paths:
               - email
               - password
               - password_confirmation
-  "/authenticate/token":
+  "/api/authenticate/token":
     post:
       summary: Get authentication token
       tags:
@@ -110,7 +110,7 @@ paths:
               required:
               - email
               - password
-  "/bookings":
+  "/api/bookings":
     get:
       summary: Get all bookings for the current user
       tags:
@@ -277,7 +277,7 @@ paths:
               - rv_listing_id
               - start_date
               - end_date
-  "/bookings/{id}/confirm":
+  "/api/bookings/{id}/confirm":
     parameters:
     - name: id
       in: path
@@ -315,7 +315,7 @@ paths:
                       type: string
                     example:
                     - Booking not found or forbidden
-  "/bookings/{id}/reject":
+  "/api/bookings/{id}/reject":
     parameters:
     - name: id
       in: path
@@ -353,7 +353,7 @@ paths:
                       type: string
                     example:
                     - Booking not found or forbidden
-  "/listings":
+  "/api/listings":
     get:
       summary: List all listings
       tags:
@@ -469,7 +469,7 @@ paths:
               - description
               - location
               - price_per_day
-  "/listings/{id}":
+  "/api/listings/{id}":
     parameters:
     - name: id
       in: path
@@ -535,21 +535,24 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    example: 1
-                  title:
-                    type: string
-                    example: Updated RV Title
-                  description:
-                    type: string
-                    example: Updated description
-                  location:
-                    type: string
-                    example: Updated Location
-                  price_per_day:
-                    type: number
-                    example: 175.0
+                  listing:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      title:
+                        type: string
+                        example: Updated RV Title
+                      description:
+                        type: string
+                        example: Updated description
+                      location:
+                        type: string
+                        example: Updated Location
+                      price_per_day:
+                        type: number
+                        example: 175.0
         '403':
           description: Forbidden - not the owner
           content:

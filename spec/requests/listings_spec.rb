@@ -14,7 +14,7 @@ RSpec.describe "Listings", type: :request do
       end
 
       it "returns all listings" do
-        get "/listings"
+        get "/api/listings"
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
         expect(json["listings"].length).to eq(2)
@@ -27,7 +27,7 @@ RSpec.describe "Listings", type: :request do
       let(:listing) { create(:rv_listing) }
 
       it "returns the listing" do
-        get "/listings/#{listing.id}"
+        get "/api/listings/#{listing.id}"
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
         expect(json["listing"]["id"]).to eq(listing.id)
@@ -36,7 +36,7 @@ RSpec.describe "Listings", type: :request do
 
     context "sad path" do
       it "returns not_found for non-existent listing" do
-        get "/listings/99999"
+        get "/api/listings/99999"
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -55,7 +55,7 @@ RSpec.describe "Listings", type: :request do
     context "happy path" do
       it "creates a new listing" do
         expect {
-          post "/listings", params: valid_params, headers: headers
+          post "/api/listings", params: valid_params, headers: headers
         }.to change(RvListing, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -68,12 +68,12 @@ RSpec.describe "Listings", type: :request do
 
     context "sad path" do
       it "returns unauthorized without authentication" do
-        post "/listings", params: valid_params
+        post "/api/listings", params: valid_params
         expect(response).to have_http_status(:unauthorized)
       end
 
       it "returns errors for invalid parameters" do
-        post "/listings", params: { title: "" }, headers: headers
+        post "/api/listings", params: { title: "" }, headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)
         expect(json).to have_key("errors")
@@ -87,8 +87,10 @@ RSpec.describe "Listings", type: :request do
 
     context "happy path" do
       it "updates the listing" do
-        put "/listings/#{listing.id}", params: update_params, headers: headers
+        put "/api/listings/#{listing.id}", params: update_params, headers: headers
         expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json["listing"]["title"]).to eq("Updated Title")
         expect(listing.reload.title).to eq("Updated Title")
       end
     end
@@ -99,7 +101,7 @@ RSpec.describe "Listings", type: :request do
       let(:other_headers) { { "Authorization" => "Bearer #{other_token.access_token}" } }
 
       it "returns forbidden for non-owner" do
-        put "/listings/#{listing.id}", params: update_params, headers: other_headers
+        put "/api/listings/#{listing.id}", params: update_params, headers: other_headers
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -111,7 +113,7 @@ RSpec.describe "Listings", type: :request do
     context "happy path" do
       it "deletes the listing" do
         expect {
-          delete "/listings/#{listing.id}", headers: headers
+          delete "/api/listings/#{listing.id}", headers: headers
         }.to change(RvListing, :count).by(-1)
 
         expect(response).to have_http_status(:no_content)

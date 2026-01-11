@@ -13,7 +13,7 @@ RSpec.describe "Bookings API", type: :request do
   let(:token2) { Devise::Api::TokensService::Create.new(resource_owner: user2).call.value! }
   let(:auth_header2) { { "Authorization" => "Bearer #{token2.access_token}" } }
 
-  path "/bookings" do
+  path "/api/bookings" do
     get "Get all bookings for the current user" do
       tags "Bookings"
       produces "application/json"
@@ -175,7 +175,7 @@ RSpec.describe "Bookings API", type: :request do
     end
   end
 
-  path "/bookings/{id}/confirm" do
+  path "/api/bookings/{id}/confirm" do
     parameter name: :id, in: :path, type: :integer, required: true, description: "Booking ID"
 
     post "Confirm a booking" do
@@ -213,7 +213,7 @@ RSpec.describe "Bookings API", type: :request do
     end
   end
 
-  path "/bookings/{id}/reject" do
+  path "/api/bookings/{id}/reject" do
     parameter name: :id, in: :path, type: :integer, required: true, description: "Booking ID"
 
     post "Reject a booking" do

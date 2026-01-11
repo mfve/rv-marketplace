@@ -2,6 +2,8 @@
 
 A basic marketplace for creating listings for an RV Marketplace, and creating bookings
 
+![img.png](img.png)
+
 To set up:
 1. Install Ruby 3.3.2 using your preferred method (rbenv example below)
 
@@ -56,5 +58,5 @@ Available at `http://localhost:3000` after startup
 
 ## Notes
 
-- No functionality included around the messages table. It needed some form of specs either - it either needs a Thread ID, Booking ID or Other User ID column. Otherwise you can just have a mess of messages between multiple people about a RV Listing.
-
+- No functionality included around the messages table. It needed some form of change of requirements - it either needs a Thread ID, Booking ID or Other User ID column. Otherwise you can just have a mess of messages between multiple people about a RV Listing.
+- RSwag documentation needs to be updated manually - would add this into a CI/CD pipeline.

@@ -7,7 +7,7 @@ RSpec.describe "Listings API", type: :request do
   let(:token) { Devise::Api::TokensService::Create.new(resource_owner: user).call.value! }
   let(:auth_header) { { "Authorization" => "Bearer #{token.access_token}" } }
 
-  path "/listings" do
+  path "/api/listings" do
     get "List all listings" do
       tags "Listings"
       produces "application/json"
@@ -122,7 +122,7 @@ RSpec.describe "Listings API", type: :request do
     end
   end
 
-  path "/listings/{id}" do
+  path "/api/listings/{id}" do
     parameter name: :id, in: :path, type: :integer, required: true, description: "Listing ID"
 
     get "Get a specific listing" do
@@ -182,11 +182,16 @@ RSpec.describe "Listings API", type: :request do
       response "200", "Listing updated successfully" do
         schema type: :object,
                properties: {
-                 id: { type: :integer, example: 1 },
-                 title: { type: :string, example: "Updated RV Title" },
-                 description: { type: :string, example: "Updated description" },
-                 location: { type: :string, example: "Updated Location" },
-                 price_per_day: { type: :number, example: 175.00 }
+                 listing: {
+                   type: :object,
+                   properties: {
+                     id: { type: :integer, example: 1 },
+                     title: { type: :string, example: "Updated RV Title" },
+                     description: { type: :string, example: "Updated description" },
+                     location: { type: :string, example: "Updated Location" },
+                     price_per_day: { type: :number, example: 175.00 }
+                   }
+                 }
                }
 
         let(:id) { create(:rv_listing, user: user).id }
