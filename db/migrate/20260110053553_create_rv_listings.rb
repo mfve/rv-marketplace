@@ -6,6 +6,7 @@ class CreateRvListings < ActiveRecord::Migration[8.0]
       t.string :location
       t.decimal :price_per_day
       t.references :user, null: false, foreign_key: true
+      t.timestamps
     end
   end
 end

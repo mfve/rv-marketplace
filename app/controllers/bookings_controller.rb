@@ -44,8 +44,8 @@ class BookingsController < ApplicationController
   private
 
   def set_listing_booking
-    @listing_booking = Booking.for_user(current_user.id).find(params[:id])
+    @listing_booking = Booking.for_users_listings(current_user.id).find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { errors: 'Booking not found' }, status: :not_found and return
+    render json: { errors: 'Booking not found or forbidden' }, status: :not_found and return
   end
 end

@@ -24,6 +24,6 @@ class AuthenticateController < ApplicationController
   private
 
   def user_params
-    params.permit(:email, :name, :password)
+    params.permit(:email, :name, :password, :password_confirmation)
   end
 end
